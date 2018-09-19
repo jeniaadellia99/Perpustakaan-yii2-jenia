@@ -137,6 +137,8 @@ class User extends \yii\db\ActiveRecord  implements \yii\web\IdentityInterface
             return false;
     }
 
+    
+
      public static function isPetugas()
     {
         if (Yii::$app->user->isGuest) {

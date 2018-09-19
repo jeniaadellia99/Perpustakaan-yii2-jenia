@@ -130,9 +130,9 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
-     public function actionDashboard()
+    public function actionDashboard()
     {
-        if (User::isAdmin() || User::isAnggota()) {
+        if (User::isAdmin() || User::isAnggota() || User::isPetugas()) {
             return $this->render('dashboard');
         }else{
             return $this->redirect(['site/login']);
