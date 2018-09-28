@@ -53,6 +53,10 @@ class BukuController extends Controller
          if (Yii::$app->request->get('export')) {
             return $this->exportExcel(Yii::$app->request->queryParams);
         }
+
+         if (Yii::$app->request->get('export-pdf')) {
+            return $this->exportPdf(Yii::$app->request->queryParams);
+        }
        
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -239,6 +243,67 @@ class BukuController extends Controller
 
         return $this->redirect($path);
     }
+
+     public function exportPdf($params)
+    {
+        $searchModel = new BukuSearch();
+        $searchModel = $searchModel->getQuerySearch($params)->all();
+        
+        $content = $this->renderPartial('/template/buku',['model' => $searchModel]);
+
+        $cssInline = <<<CSS
+        table {
+            *border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+        }
+        .table-pdf td, .table-pdf th {
+            padding: 10px;
+            border: 1px solid #0000;
+            text-align: center;
+        }
+        .table-pdf th {
+            border: 1px solid #0000;
+            background-color: #eee;
+            text-align: center;
+        }
+CSS;
+
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            'marginLeft' => 10,
+            'marginRight' => 10,
+            // A4 paper format
+            'format' => Pdf::FORMAT_LEGAL,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_LANDSCAPE,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => $cssInline,
+             // set mPDF properties on the fly
+            'options' => ['title' => 'Linen - Supervisi Outsourcing'],
+             // call mPDF methods on the fly
+            'methods' => [
+                'SetHeader'=> [null],
+                'SetFooter'=> [null],
+            ]
+        ]);
+
+        $date = date('Y-m-d His');
+
+        $pdf->filename = "Monitoring Buku - ".$date.".pdf";
+
+        // return the pdf output as per the destination setting
+        return $pdf->render();
+    }
+
 
 }
 

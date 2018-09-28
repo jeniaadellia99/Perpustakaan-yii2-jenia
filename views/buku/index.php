@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Tambah Buku', ['create'], ['class' => 'btn btn-success']) ?>
         <?= Html::a('<i class="fa fa-print"></i> Export Excel', Yii::$app->request->url.'&export=1', ['class' => 'btn btn-success btn-flat','target' => '_blank']) ?>
+         <?= Html::a('<i class="fa fa-print"></i> Export Pdf', Yii::$app->request->url.'&export-pdf=1', ['class' => 'btn btn-danger btn-flat','target' => '_blank']) ?> 
     </p>
 
     <?= GridView::widget([
