@@ -10,12 +10,12 @@ $this->title = 'Tambah Kategori';
 $this->params['breadcrumbs'][] = ['label' => 'Kategori', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="kategori-create">
+<div class="kategori-create box box-primary">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
+   <div class="body">
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
 
+</div>
 </div>

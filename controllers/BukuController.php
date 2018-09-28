@@ -10,11 +10,14 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use yii\web\ArrayHelper;
-use PhpOffice\PhpWord\IOfactory;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Shared\Converter;
-use PhpOffice\PhpSpreadsheet;
+
+use kartik\mpdf\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+
 
 
 /**
@@ -46,6 +49,10 @@ class BukuController extends Controller
     {
         $searchModel = new BukuSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+         if (Yii::$app->request->get('export')) {
+            return $this->exportExcel(Yii::$app->request->queryParams);
+        }
        
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -149,231 +156,90 @@ class BukuController extends Controller
         throw ('File yang anda cari tidak ditemukan.');
     }
 
-public function actionJadwalPl()
-{
-    $phpWord = new phpWord();
-       $phpWord->setDefaultFontSize(11);
-
-       $section = $phpWord->addSection(
-        [
-            'marginTop' => Converter::cmTotwip(1.80),
-            'marginBottom' => Converter::cmTotwip(1.80),
-            'marginLeft' => Converter::cmTotwip(1.2),
-            'marginRight' => Converter::cmTotwip(1.6),
-        ]
-       );
-
-       $fontStyle = [
-        'underline' => 'dash',
-        'bold' => true,
-        'italic' => true,
-       ];
-
-       $bgColor = [
-        'bgColor' => '0000FF',
-       ];
-
-       $paragraphCenter = [
-        'alignment'=>'center',
-
-       ];
-
-       $headerStyle = [
-        'bold' => true,
-       ];
-
-      //  $addImages = [
-      //   array(
-      //   'width'         => 100,
-      //   'height'        => 100,
-      //   'marginTop'     => -1,
-      //   'marginLeft'    => -1,
-      //   'wrappingStyle' => 'behind'
-
-      // )];
-      // $footer = $section->addFooter();
-      // $footer->addImage('@web/upload/sampul/');
-
-       $section->addText(
-                'PERPUSTAKAAN ONLINE',
-                 $bgColor,
-                $paragraphCenter,
-               
-                $headerStyle
-                 
-       );
-
-       $section->addText(
-        'Jenia Adellia Puspita',
-        $headerStyle,
-        $paragraphCenter,
-        $fontStyle
-       );
-
-       $judul = $section->addTextRun($paragraphCenter);
-
-       $judul->addText('Daftar Buku ', $fontStyle);
-      $judul = $section->addTextRun($paragraphCenter);
-
-       $judul->addText('jeniaaaa ', ['italic' =>true]);
-        $section->addTextBreak(1);
-
-       $judul->addText('Perpustakaan Jenia ', ['bold' =>true]);
-        $section->addTextBreak(1);
-
-
-       $table = $section->addTable([
-        'alignment' => 'center',
-        'bgColor'   => '000000',
-        'borderSize'=> 6,
-       ]);
-
-       $table->addRow(null);
-       $table->addCell(500)->addText('NO', $headerStyle, $paragraphCenter);
-       $table->addCell(5000)->addText('Nama Buku', $headerStyle, $paragraphCenter);
-       $table->addCell(5000)->addText('Tahun Terbit', $headerStyle, $paragraphCenter);
-       $table->addCell(2000)->addText('Kategori', $headerStyle, $paragraphCenter);
-       $table->addCell(2000)->addText('Penulis', $headerStyle, $paragraphCenter);
-       $table->addCell(2000)->addText('Penerbit', $headerStyle, $paragraphCenter);
-       $table->addCell(2000)->addText('Sampul', $headerStyle, $paragraphCenter);
-      // ========SELECT * FROM ===============//
-         $semuaBuku = Buku::find()->all(); $nomor = 1;
-        foreach ($semuaBuku as $buku) {
-        $table->addRow(null);
-        $table->addCell(500)->addText($nomor++, null, $paragraphCenter);
-        $table->addCell(5000)->addText($buku->nama, null, $paragraphCenter);
-        $table->addCell(5000)->addText($buku->tahun_terbit,null, $paragraphCenter);
-        $table->addCell(2000)->addText($buku->getKategori(), null, $paragraphCenter);
-        $table->addCell(2000)->addText($buku->getPenulis(), null, $paragraphCenter);
-        $table->addCell(2000)->addText($buku->getPenerbit(), null, $paragraphCenter);
-        // $table->addCell(2000)->addImage($buku->sampul, null, $addImage);
-
-}
-       // $section->addText(
-       //  'teks 1 2 3',
-       //  ['bold' => true],
-       //  ['alignment' => 'center']
-       // );
-
-//         $semuaBuku = Buku::find()->all();
-//         foreach ($semuaBuku as $buku ) {
-//         $section->addText($buku->nama);
-// }
-
-       // $section ->addListItem('List Item I', 0);
-       // $section ->addListItem('List Item I.a', 1);
-       // $section ->addListItem('List Item I.b', 1);
-       // $section ->addListItem('List Item II', 0);
-
-
-       $filename = time() . 'Jadwal-PL.docx';
-       $path = 'exportfile/'. $filename;
-       $xmlWriter = IOfactory::createWriter($phpWord,'Word2007');
-       $xmlWriter -> save($path);
-       return $this -> redirect($path);
-    
-}
-
-    public function actionExportWord()
+    public function exportExcel($params)
     {
-       $phpWord = new phpWord();
-       $phpWord->setDefaultFontSize(11);
+        $spreadsheet = new Spreadsheet();
+        
+        $spreadsheet->setActiveSheetIndex(0);
+        
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $setBorderArray = array(
+            'borders' => array(
+                'allBorders' => array(
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => array('argb' => '000000'),
+                ),
+            ),
+        );
 
-       $section = $phpWord->addSection(
-        [
-            'marginTop' => Converter::cmTotwip(1.80),
+        $sheet->getColumnDimension('A')->setWidth(5);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(20);
+        $sheet->getColumnDimension('D')->setWidth(35);
+        $sheet->getColumnDimension('E')->setWidth(30);
+        $sheet->getColumnDimension('F')->setWidth(30);
+        $sheet->getColumnDimension('G')->setWidth(30);
+        $sheet->getColumnDimension('H')->setWidth(30);
+        $sheet->getColumnDimension('I')->setWidth(30);
+       
 
-            'marginBottom' => Converter::cmTotwip(1.80),
-            'marginLeft' => Converter::cmTotwip(1.2),
-            'marginRight' => Converter::cmTotwip(1.6),
+        $sheet->setCellValue('A3', strtoupper('No'));
+        $sheet->setCellValue('B3', strtoupper('Nama Buku'));
+        $sheet->setCellValue('C3', strtoupper('Tahun Terbit'));
+        $sheet->setCellValue('D3', strtoupper('Penulis'));
+        $sheet->setCellValue('E3', strtoupper('Penerbit'));
+        $sheet->setCellValue('F3', strtoupper('Kategori'));
+        $sheet->setCellValue('G3', strtoupper('Berkas'));
+        $sheet->setCellValue('H3', strtoupper('Sampul'));
+        $sheet->setCellValue('I3', strtoupper('Sinopsis Detail'));
 
-        ]
-       );
+        $spreadsheet->getActiveSheet()->setCellValue('A1', 'Data Buku Perpustakaan');
 
-       $fontStyle = [
-        'underline' => 'dash',
-        'bold' => true,
-        'italic' => true,
-       ];
+        $spreadsheet->getActiveSheet()->getStyle('A3:I3')->getFill()->setFillType(Fill::FILL_SOLID);
+        $spreadsheet->getActiveSheet()->getStyle('A3:I3')->getFill()->getStartColor()->setARGB('d8d8d8');
+        $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
+        $spreadsheet->getActiveSheet()->getDefaultRowDimension('3')->setRowHeight(25);
+        $sheet->getStyle('A1:I3')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-       $paragraphCenter = [
-        'alignment'=>'center',
+        $row = 3;
+        $i=1;
 
-       ];
+        $searchModel = new BukuSearch();
 
-       $section->addText(
-                'jadwal pengadaan langsung',
-                $fontStyle,
-                $paragraphCenter
-       );
+        foreach($searchModel->getQuerySearch($params)->all() as $data){
+            $row++;
+            $sheet->setCellValue('A' . $row, $i);
+            $sheet->setCellValue('B' . $row, $data->nama);
+            $sheet->setCellValue('C' . $row, $data->tahun_terbit);
+            $sheet->setCellValue('D' . $row, @$data->penulis->nama);
+            $sheet->setCellValue('E' . $row, @$data->penerbit->nama);
+            $sheet->setCellValue('F' . $row, @$data->kategori->nama);
+            $sheet->setCellValue('G' . $row, $data->berkas);
+            $sheet->setCellValue('H' . $row, $data->sampul);
+            $sheet->setCellValue('I' . $row, $data->sinopsis);
+            
+            $i++;
+        }
 
-       $judul = $section->addTextRun($paragraphCenter);
-
-       $judul -> addText('pengadaan jasa ', $fontStyle);
-         $judul -> addText('Konsultasi ', ['italic' =>true]);
-          $judul -> addText('Sistem Informasi ', ['bold' =>true]);
-
-       $section->addText(
-        'teks 1 2 3',
-        ['bold' => true],
-        ['alignment' => 'center']
-       );
-
-$semuaBuku = Buku::find()->all();
-foreach ($semuaBuku as $buku ) {
-    $section->addText($buku->nama);
-}
-
-       $section ->addListItem('List Item I', 0);
-       $section ->addListItem('List Item I.a', 1);
-       $section ->addListItem('List Item I.b', 1);
-       $section ->addListItem('List Item II', 0);
+        $sheet->getStyle('A3:I' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('D3:I' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('E3:I' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
 
+        $sheet->getStyle('C' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-       $filename = time() . 'test.docx';
-       $path = 'exportfile/'. $filename;
-       $xmlWriter = IOfactory::createWriter($phpWord,'Word2007');
-       $xmlWriter -> save($path);
-       return $this -> redirect($path);
+        $sheet->getStyle('A3:I' . $row)->applyFromArray($setBorderArray);
+
+        $filename = time() . 'Data Buku.xlsx';
+        $path = 'exports/' . $filename;
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($path);
+
+        return $this->redirect($path);
     }
 
-
-    public function actionExportExcel() {
-     
-    $spreadsheet = new PhpSpreadsheet\Spreadsheet();
-    $worksheet   = $spreadsheet->getActiveSheet();
-     
-    //Menggunakan Model
-
-    $database = Buku::find()
-    ->select('nama, tahun_terbit')
-    ->all();
-
-    $worksheet->setCellValue('A1', 'Judul Buku');
-    $worksheet->setCellValue('B1', 'Tahun Terbit');
-     
-    //JIka menggunakan DAO , gunakan QueryAll()
-     
-    /*
-     
-    $sql = "select kode_jafung,jenis_jafung from ref_jafung"
-     
-    $database = Yii::$app->db->createCommand($sql)->queryAll();
-     
-    */
-     
-    $database = \yii\helpers\ArrayHelper::toArray($database);
-    $worksheet->fromArray($database, null, 'A2');
-     
-    $writer = new Xlsx($spreadsheet);
-     
-    header('Content-Type: application/vnd.ms-excel');
-    header('Content-Disposition: attachment;filename="buku.xlsx"');
-    header('Cache-Control: max-age=0');
-    $writer->save('php://output');
-     
-    }
 }
 
 

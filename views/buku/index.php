@@ -6,6 +6,9 @@ use app\models\Penulis;
 use app\models\Penerbit;
 use app\models\Kategori;
 use app\models\Buku;
+use app\models\BukuSearch;
+use yii\web\ArrayHelper;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\BukuSearch */
@@ -21,6 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Tambah Buku', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-print"></i> Export Excel', Yii::$app->request->url.'&export=1', ['class' => 'btn btn-success btn-flat','target' => '_blank']) ?>
     </p>
 
     <?= GridView::widget([

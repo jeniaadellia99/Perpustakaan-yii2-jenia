@@ -13,6 +13,8 @@ use app\models\User;
                     <img src="img/admin.jpg" class="img-circle" alt="User Image"/>
                 <?php } elseif (User::isAnggota()) { ?>
                     <img src="img/anggota.png" class="img-circle" alt="User Image"/>
+                 <?php } elseif (User::isPetugas()) { ?>
+                    <img src="img/petugas.jpg" class="img-circle" alt="User Image"/>
                 <?php } ?>
             </div>
             <div class="pull-left info">
@@ -68,7 +70,7 @@ use app\models\User;
                 'items' => [
                     ['label' => 'Menu', 'options' => ['class' => 'header']],
                     ['label' => 'Peminjaman', 'icon' => 'book', 'url' => ['peminjaman/index']],
-                    ["label" => "Anggota", 'icon'=>'users', "url" => ["/anggota/index"]],
+                    // ["label" => "Anggota", 'icon'=>'users', "url" => ["/anggota/index"]],
                     ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                 ],
             ]

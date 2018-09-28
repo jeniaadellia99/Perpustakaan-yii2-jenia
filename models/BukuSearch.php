@@ -39,17 +39,34 @@ class BukuSearch extends Buku
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+
+    public function getQuerySearch($params)
     {
-        $query = Buku::find();
+        $query = BukuSearch::find();
+
+        $this->load($params);
 
         // add conditions that should always apply here
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'nama' => $this->nama,
+            'tahun_terbit' => $this->tahun_terbit,
+            'id_kategori' => $this->id_kategori,
+            'id_penulis' => $this->id_penulis,
+            'id_penerbit' => $this->id_penerbit,
+            'sinopsis' => $this->sinopsis,
+            'sampul' => $this->sampul,
+            'berkas' => $this->berkas,
+      
         ]);
 
-        $this->load($params);
+        return $query;
+    }
+    public function search($params)
+    {
+        $query = $this->getQuerySearch($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -57,19 +74,9 @@ class BukuSearch extends Buku
             return $dataProvider;
         }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'tahun_terbit' => $this->tahun_terbit,
-            'id_penulis' => $this->id_penulis,
-            'id_penerbit' => $this->id_penerbit,
-            'id_kategori' => $this->id_kategori,
-        ]);
-
-        $query->andFilterWhere(['like', 'nama', $this->nama])
-            ->andFilterWhere(['like', 'sinopsis', $this->sinopsis])
-            ->andFilterWhere(['like', 'sampul', $this->sampul])
-            ->andFilterWhere(['like', 'berkas', $this->berkas]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);        
 
         return $dataProvider;
     }

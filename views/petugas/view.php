@@ -6,13 +6,11 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Petugas */
 
-$this->title = $model->id;
+$this->title = "Nama: ". $model->nama;
 $this->params['breadcrumbs'][] = ['label' => 'Petugas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="petugas-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="petugas-view box-box primary">
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -24,16 +22,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-
+<div class="body">
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
             'nama',
             'alamat',
             'telepon',
             'email:email',
         ],
     ]) ?>
-
+</div>
 </div>

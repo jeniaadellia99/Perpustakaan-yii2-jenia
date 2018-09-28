@@ -113,8 +113,10 @@ use app\models\User;
                         <li class="user-header">
                            <?php if (User::isAdmin()) { ?>
                             <img src="img/admin.jpg" class="img-circle" alt="User Image"/>
-                        <?php } elseif (User::isAnggota()) { ?>
-                            <img src="img/anggota.png" class="img-circle" alt="User Image"/>
+                                <?php } elseif (User::isAnggota()) { ?>
+                                    <img src="img/anggota.png" class="img-circle" alt="User Image"/>
+                                        <?php } elseif (User::isPetugas()) { ?>
+                                            <img src="img/petugas.jpg" class="img-circle" alt="User Image"/>
                         <?php } ?>
                             <p>
                                 <?= Yii::$app->user->identity->username ?> Site

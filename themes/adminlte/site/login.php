@@ -57,9 +57,9 @@ $fieldOptions2 = [
             
         </div>
         <!-- /.social-auth-links -->
-
-        <a href="#">I forgot my password</a><br>
-        <a href="#" class="text-center">Register a new membership</a>
+<!-- 
+        <a href="#">I forgot my password</a><br> -->
+        <a href="#" class="text-center">Are you have an Account? Register here.</a>
 
     </div>
     <!-- /.login-box-body -->
