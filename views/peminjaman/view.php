@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\components\Helper;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Peminjaman */
@@ -12,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="peminjaman-view box box-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -41,8 +42,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $data->anggota->nama;
             }
         ],
-            'tanggal_pinjam',
-            'tanggal_kembali',
+             [
+                'attribute' => 'tanggal_pinjam',
+                'format' => 'raw',
+                'value' => function($data) {
+                    return Helper::getTanggalSingkat($data->tanggal_pinjam);
+                },
+            ],
+           
+             [
+                'attribute' => 'tanggal_kembali',
+                'format' => 'raw',
+                'value' => function($data) {
+                    return Helper::getTanggalSingkat($data->tanggal_kembali);
+                },
+            ],
+           
         ],
     ]) ?>
 

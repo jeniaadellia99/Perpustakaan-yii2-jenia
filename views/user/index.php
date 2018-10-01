@@ -12,12 +12,11 @@ $this->title = 'User';
 ?>
 <div class="user-index box box-primary">
 
-  
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="box-header">
+        <?= Html::a('Tambah User', ['create'], ['class' => 'btn btn-success']) ?>
+    </div>
 
-    <div class="body">
-        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
-
+<div class="box-body">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
