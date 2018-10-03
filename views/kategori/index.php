@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
    <div class="box-header">
         <?= Html::a('<i class="fa fa-plus"></i> Tambah Kategori', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
+         <?= Html::a('<i class="fa fa-print"></i> Export Excel', Yii::$app->request->url.'&export=1', ['class' => ' .btn.bg-olive.btn-flat','target' => '_blank']) ?>
     </div>
 
     <div class="box-body">

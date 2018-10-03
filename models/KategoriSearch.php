@@ -39,6 +39,24 @@ class KategoriSearch extends Kategori
      *
      * @return ActiveDataProvider
      */
+
+     public function getQuerySearch($params)
+    {
+        $query = BukuSearch::find();
+
+        $this->load($params);
+
+        // add conditions that should always apply here
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'nama' => $this->nama,
+    
+        ]);
+
+        return $query;
+    }
     public function search($params)
     {
         $query = Kategori::find();

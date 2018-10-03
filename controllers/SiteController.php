@@ -10,6 +10,8 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\User;
+use app\models\Anggota;
+use app\models\RegisterForm;
 
 class SiteController extends Controller
 {
@@ -138,5 +140,39 @@ class SiteController extends Controller
             return $this->redirect(['site/login']);
         }
        
+    }
+
+    public function actionRegister()
+    {
+        $this->layout = 'main-login';
+        $model = new RegisterForm();
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            
+                $anggota = new Anggota();
+                $anggota->nama      = $model->nama;
+                $anggota->alamat    = $model->alamat;
+                $anggota->email     = $model->email;
+                $anggota->telepon   = $model->telepon;
+
+                $anggota->save();
+
+                $user = new User();
+                $user->username = $model->username;
+                $user->password = $model->password;
+                $user->id_anggota = $anggota->id;
+                $user->id_petugas = 0;
+                $user->id_user_role = 2;
+                $user->status = 2;            
+
+                $user->save();
+
+                return $this->redirect(['site/login']);
+
+
+        }
+
+        return $this->render('register', ['model'=>$model]);
+
     }
 }

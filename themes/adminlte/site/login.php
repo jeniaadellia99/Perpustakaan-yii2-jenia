@@ -59,7 +59,7 @@ $fieldOptions2 = [
         <!-- /.social-auth-links -->
 <!-- 
         <a href="#">I forgot my password</a><br> -->
-        <a href="#" class="text-center">Are you have an Account? Register here.</a>
+        <?= Html::a('Are you have an Account? Register here.', ['site/register'], ['class' => 'text-center']) ?>
 
     </div>
     <!-- /.login-box-body -->
